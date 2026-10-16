@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      width: 300px;
+      padding: 16px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 14px;
+    }
+
+    h2 {
+      margin: 0 0 12px 0;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .rule-form {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 16px;
+      padding: 12px;
+      background: #f5f5f5;
+      border-radius: 6px;
+    }
+
+    .rule-form input {
+      padding: 6px 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 13px;
+    }
+
+    .rule-form button {
+      padding: 8px 12px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .rule-form button:hover {
+      background: #0056b3;
+    }
+
+    .rules-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .rule-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px;
+      background: white;
+      border: 1px solid #e0e0e0;
+      border-radius: 4px;
+    }
+
+    .rule-color {
+      width: 20px;
+      height: 20px;
+      border-radius: 3px;
+      border: 1px solid #ccc;
+      flex-shrink: 0;
+    }
+
+    .rule-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .rule-pattern {
+      font-weight: 500;
+      font-size: 12px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .rule-delete {
+      padding: 4px 8px;
+      background: #dc3545;
+      color: white;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 11px;
+    }
+
+    .rule-delete:hover {
+      background: #c82333;
+    }
+
+    .options-link {
+      margin-top: 12px;
+      text-align: center;
+    }
+
+    .options-link a {
+      color: #007bff;
+      text-decoration: none;
+      font-size: 12px;
+    }
+
+    .options-link a:hover {
+      text-decoration: underline;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 20px;
+      color: #666;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Quick Add Rule</h2>
+
+  <div class="rule-form">
+    <input type="text" id="pattern" placeholder="URL pattern (e.g., github.com)">
+    <input type="color" id="color" value="#ff0000">
+    <button id="add">Add Rule</button>
+  </div>
+
+  <h2>Active Rules</h2>
+  <div id="rules-list" class="rules-list"></div>
+
+  <div class="options-link">
+    <a href="#" id="open-options">Open full options</a>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
