@@ -19,8 +19,8 @@ A Chrome extension that applies color tints/overlays to favicons based on URL pa
 5. Select the extension directory
 
 The extension comes with two default rules:
-- **Google Calendar** → Red tint (#ff0000)
-- **Google Docs** → Purple tint (#9370db)
+- **Jira** → Purple tint (#9370db), matching `issues.redhat.com` and `*.atlassian.net`
+- **Google Calendar** → Orange tint (#ff8c00)
 
 You can modify or remove these in the options page.
 

@@ -11,10 +11,10 @@
 ## Step 2: Start Using
 
 The extension comes pre-configured with two rules:
-- **Google Calendar** (calendar.google.com) → Red (#ff0000)
-- **Google Docs** (docs.google.com) → Purple (#9370db)
+- **Jira** (issues.redhat.com or any \*.atlassian.net site) → Purple (#9370db)
+- **Google Calendar** (calendar.google.com) → Orange (#ff8c00)
 
-Visit Google Calendar or Google Docs to see the tinted favicons!
+Visit Jira or Google Calendar to see the tinted favicons!
 
 ## Adding More Rules
 

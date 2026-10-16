@@ -2,13 +2,13 @@ chrome.runtime.onInstalled.addListener(function(details) {
   if (details.reason === 'install') {
     const defaultRules = [
       {
-        pattern: 'calendar.google.com',
-        color: '#ff0000',
+        pattern: '/(issues\\.redhat\\.com|\\.atlassian\\.net)/',
+        color: '#9370db',
         enabled: true
       },
       {
-        pattern: 'docs.google.com',
-        color: '#9370db',
+        pattern: 'calendar.google.com',
+        color: '#ff8c00',
         enabled: true
       }
     ];
