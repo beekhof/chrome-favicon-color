@@ -1,4 +1,12 @@
-const TINT_ATTRIBUTE = 'data-tinted';
+// The data URL we last wrote for each favicon element. Single page apps
+// rewrite their favicon as you navigate, so a one-shot "already done" flag
+// would hand the icon back to the page the first time it did that. Comparing
+// against what we wrote lets us retint on every genuine change, while still
+// ignoring the rewrite we caused ourselves.
+const tintedHrefs = new WeakMap();
+
+// How long to wait for favicon mutations to settle before retinting.
+const PROCESS_DEBOUNCE_MS = 150;
 
 // Fallback blend strength for greyscale icons, applied to the darkest pixels.
 // Light pixels get proportionally less, so white stays white.
@@ -9,12 +17,12 @@ const TINT_STRENGTH = 0.7;
 const GREYSCALE_SATURATION = 0.15;
 
 function applyTint(favicon, color) {
-  if (!favicon || !color || favicon.getAttribute(TINT_ATTRIBUTE) === 'true') {
+  if (!favicon || !color) {
     return;
   }
 
   const href = favicon.href;
-  if (!href || href.startsWith('data:')) {
+  if (!href || tintedHrefs.get(favicon) === href) {
     return;
   }
 
@@ -71,8 +79,8 @@ function applyTint(favicon, color) {
       ctx.putImageData(imageData, 0, 0);
 
       const newHref = canvas.toDataURL('image/png');
+      tintedHrefs.set(favicon, newHref);
       favicon.href = newHref;
-      favicon.setAttribute(TINT_ATTRIBUTE, 'true');
     } catch (e) {
       console.error('Failed to tint favicon:', e);
     }
@@ -193,20 +201,60 @@ function processPage() {
   });
 }
 
+function isFaviconLink(node) {
+  return node.nodeName === 'LINK' &&
+    typeof node.rel === 'string' &&
+    node.rel.includes('icon');
+}
+
+let pendingProcess = null;
+
+// Pages tend to rewrite the favicon in bursts, so coalesce the mutations
+// rather than redrawing the canvas once per change.
+function scheduleProcess() {
+  if (pendingProcess !== null) {
+    return;
+  }
+
+  pendingProcess = setTimeout(function() {
+    pendingProcess = null;
+    processPage();
+  }, PROCESS_DEBOUNCE_MS);
+}
+
 const observer = new MutationObserver(function(mutations) {
   for (const mutation of mutations) {
+    // An href change on the existing link is how a single page app usually
+    // swaps its icon; watching only for added nodes misses it entirely.
+    if (mutation.type === 'attributes') {
+      if (isFaviconLink(mutation.target)) {
+        scheduleProcess();
+        return;
+      }
+      continue;
+    }
+
     for (const node of mutation.addedNodes) {
-      if (node.nodeName === 'LINK' && node.rel && node.rel.includes('icon')) {
-        processPage();
-        break;
+      if (isFaviconLink(node)) {
+        scheduleProcess();
+        return;
       }
     }
   }
 });
 
-observer.observe(document.head || document.documentElement, {
+observer.observe(document.documentElement, {
   childList: true,
-  subtree: true
+  subtree: true,
+  attributes: true,
+  attributeFilter: ['href', 'rel']
+});
+
+// Some apps restore their own favicon when a tab becomes active again.
+document.addEventListener('visibilitychange', function() {
+  if (!document.hidden) {
+    scheduleProcess();
+  }
 });
 
 processPage();
