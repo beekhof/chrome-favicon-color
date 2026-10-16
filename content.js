@@ -1,5 +1,9 @@
 const TINT_ATTRIBUTE = 'data-tinted';
 
+// How strongly the darkest pixels take the tint. Light pixels get
+// proportionally less, so white stays white.
+const TINT_STRENGTH = 0.7;
+
 function applyTint(favicon, color) {
   if (!favicon || !color || favicon.getAttribute(TINT_ATTRIBUTE) === 'true') {
     return;
@@ -31,9 +35,16 @@ function applyTint(favicon, color) {
       for (let i = 0; i < data.length; i += 4) {
         const alpha = data[i + 3] / 255;
         if (alpha > 0) {
-          data[i] = data[i] * 0.3 + tintColor.r * 0.7;
-          data[i + 1] = data[i + 1] * 0.3 + tintColor.g * 0.7;
-          data[i + 2] = data[i + 2] * 0.3 + tintColor.b * 0.7;
+          // Rec. 601 luminance: 0 for black, 1 for white. Scaling the tint by
+          // its inverse leaves white untouched and tints the artwork, with no
+          // hard threshold to alias the antialiased edges.
+          const luminance =
+            (0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2]) / 255;
+          const amount = TINT_STRENGTH * (1 - luminance);
+
+          data[i] = data[i] * (1 - amount) + tintColor.r * amount;
+          data[i + 1] = data[i + 1] * (1 - amount) + tintColor.g * amount;
+          data[i + 2] = data[i + 2] * (1 - amount) + tintColor.b * amount;
         }
       }
 
